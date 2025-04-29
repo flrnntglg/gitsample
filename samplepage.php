@@ -1,80 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>UP-AIMS Home</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Map UI</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f4f7fe;
+      display: flex;
+      height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+      position: relative;
+    }
+
+    .sidebar {
+      width: 300px;
+      background-color: #ffffff;
+      padding: 2rem;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      border-top-left-radius: 20px;
+      border-bottom-left-radius: 20px;
+      transition: transform 0.3s ease-in-out;
+      z-index: 2;
+    }
+
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+
+    .sidebar h2 {
+      font-size: 1.5rem;
+      color: #4a4a4a;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group label {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 0.7rem;
+      border-radius: 10px;
+      border: 1px solid #dcdcdc;
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .form-buttons button {
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .filter-btn {
+      background-color: #3f5efb;
+      color: white;
+    }
+
+    .reset-btn {
+      background-color: #e0e0e0;
+      color: #333;
+    }
+
+    .map-container {
+      flex: 1;
+      position: relative;
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .map-container.fullwidth {
+      width: 100%;
+    }
+
+
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+      }
+      .sidebar, .map-container {
+        width: 100%;
+        border-radius: 0;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gray-100">
-
-  <!-- Header Image Carousel -->
-  <div x-data="{ current: 0, images: [
-      'storage/cover-photos/5a733aa4-feb1-49bf-8fa2-dfa56775ca71.png',
-      'https://via.placeholder.com/1600x400/0f766e/ffffff?text=Urban+Farming',
-      'https://via.placeholder.com/1600x400/1e3a8a/ffffff?text=Community+Garden'
-    ] }" class="relative w-full h-72 overflow-hidden">
-    
-    <template x-for="(img, index) in images" :key="index">
-      <div x-show="current === index" class="absolute inset-0 transition-all duration-700">
-        <img :src="img" class="w-full h-full object-cover" />
+<body>
+  <div class="container">
+    <div class="sidebar" id="sidebar">
+      <h2>Map</h2>
+      <div class="form-group">
+        <label for="technology">Technology</label>
+        <input type="text" id="technology" placeholder="Enter technology...">
       </div>
-    </template>
-
-    <!-- Arrows -->
-    <button @click="current = (current === 0) ? images.length - 1 : current - 1"
-            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full">
-      ‹
-    </button>
-    <button @click="current = (current === images.length - 1) ? 0 : current + 1"
-            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full">
-      ›
-    </button>
-  </div>
-
-  <!-- Content Section: Announcements (Left) + Map (Right) -->
-  <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-    <!-- Announcements -->
-    <div>
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">📢 Announcements</h2>
-
-      <div class="bg-white shadow rounded-lg p-4 mb-6">
-        <div class="flex items-center space-x-4">
-          <img src="https://via.placeholder.com/40" alt="Profile" class="w-10 h-10 rounded-full">
-          <div>
-            <p class="font-semibold text-gray-800">UP-AIMS Admin</p>
-            <p class="text-xs text-gray-500">Posted 2 hours ago</p>
-          </div>
-        </div>
-        <p class="mt-4 text-gray-700">🚧 The system will be temporarily unavailable on April 30 from 1AM to 3AM.</p>
+      <div class="form-group">
+        <label for="crops">Crops</label>
+        <input type="text" id="crops" placeholder="Enter crops...">
       </div>
-
-      <div class="bg-white shadow rounded-lg p-4 mb-6">
-        <div class="flex items-center space-x-4">
-          <img src="https://via.placeholder.com/40" alt="Profile" class="w-10 h-10 rounded-full">
-          <div>
-            <p class="font-semibold text-gray-800">UP-AIMS Admin</p>
-            <p class="text-xs text-gray-500">Posted April 20</p>
-          </div>
-        </div>
-        <p class="mt-4 text-gray-700">✨ New CSV upload feature for encoding partners now available.</p>
+      <div class="form-group">
+        <label for="region">Region</label>
+        <select id="region">
+          <option>-- Select Region --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="province">Province</label>
+        <select id="province">
+          <option>-- Select Province --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="municipality">Municipality</label>
+        <select id="municipality">
+          <option>-- Select Municipality --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="barangay">Barangay</label>
+        <select id="barangay">
+          <option>-- Select Barangay --</option>
+        </select>
+      </div>
+      <div class="form-buttons">
+        <button class="filter-btn">Filter</button>
+        <button class="reset-btn">Reset</button>
       </div>
     </div>
-
-    <!-- Google Map -->
-    <div>
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">🗺️ Farm Locations</h2>
-      <div class="w-full h-[500px] rounded-lg overflow-hidden shadow">
-        <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1NtFihS4xhEV8LYEj-WLlVFqcJkMi-l4&ll=7.050571616465707%2C124.95462493207573&z=15"
-                class="w-full h-full border-0"
-                allowfullscreen
-                loading="lazy">
-        </iframe>
-      </div>
+    <div class="map-container" id="map-container">
+      <button class="toggle-btn" onclick="toggleSidebar()"></button>
+      <!-- Embed your Google My Map iframe -->
+      <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1NtFihS4xhEV8LYEj-WLlVFqcJkMi-l4&ll=7.050571616465707%2C124.95462493207573&z=15" allowfullscreen></iframe>
     </div>
-
   </div>
 
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const mapContainer = document.getElementById('map-container');
+      sidebar.classList.toggle('hidden');
+      mapContainer.classList.toggle('fullwidth');
+    }
+  </script>
 </body>
 </html>
